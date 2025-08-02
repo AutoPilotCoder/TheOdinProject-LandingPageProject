@@ -54,7 +54,68 @@ p.textContent = "ME TOO!"
 div.append(h1, p)
 testArea.appendChild(div)
 
+/** Etch a sketch **/
+//Create EtchASketch Area
+const etchASketch = document.createElement('div')
+etchASketch.classList.add('etch-a-sketch')
+etchASketch.classList.add("grid-container")
+testArea.insertAdjacentElement('afterend', etchASketch)
 
-// etch a sketch
-const etchASketch = document.createElement('div').classList.add('etch-a-sketch')
-testArea.after(etchASketch)
+//Create Grid
+function getRandomColor() {
+    return "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, "0");
+}
+function createGrid(parent, length) {
+    let percentage = Math.floor(100 / length)
+    for (let i = 0; i < length * length; i++) {
+        let gridItem = document.createElement('div')
+        gridItem.classList.add('grid-item')
+        gridItem.setAttribute("style", `min-width: ${percentage}%;`)
+        gridItem.addEventListener('mouseenter', () => {
+            gridItem.setAttribute('style', `min-width: ${percentage}%;background:${getRandomColor()};opacity:0.${i < 10 ? i + 1 : 10}`)
+        })
+        parent.appendChild(gridItem)
+    }
+}
+
+let length = 4
+createGrid(etchASketch, length)
+
+//Custom Length Button
+function openModal(parent) {
+    const modalOverlay = document.createElement('div')
+    modalOverlay.classList.add('modal-overlay')
+
+    const modalContainer = document.createElement('div')
+    modalContainer.classList.add('modal-container')
+
+    const input = document.createElement('input')
+    input.setAttribute('type', 'text')
+    input.setAttribute('placeholder', 'Length?')
+
+    const buttonElement = document.createElement('button')
+    buttonElement.textContent = 'Confirm'
+    buttonElement.addEventListener('click', () => {
+        while (parent.firstChild) {
+            parent.removeChild(parent.firstChild);
+        }
+        modalOverlay.remove()
+        let val = input.value <= 100 ? input.value : 4
+        createGrid(parent, val || 4)
+    })
+
+    modalContainer.appendChild(input)
+    modalContainer.appendChild(buttonElement)
+
+    modalOverlay.appendChild(modalContainer)
+    document.body.appendChild(modalOverlay)
+}
+
+const openModalButton = document.createElement('button')
+openModalButton.setAttribute('style', 'background:blue;color:white;padding:50px;border-radius:10px')
+openModalButton.textContent = 'Select Length'
+openModalButton.addEventListener('click', () => {
+    openModal(etchASketch)
+})
+etchASketch.insertAdjacentElement('beforebegin', openModalButton)
+
